@@ -6,7 +6,7 @@ function puedeEntrar(socio){
     if(socio.vencimiento >=fechaHoy()) {
         return `${socio.nombre}: acceso permitido`
     }
-    return `${socio.nombre}:plan vencido`
+    return `${socio.nombre}: plan vencido`
 }
 const socios = [
   { nombre: "Juan", vencimiento: "2026-05-15" }, 
