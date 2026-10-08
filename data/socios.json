@@ -1,1 +1,7 @@
-[] 
+[
+    {"nombre":"Juan","vencimiento":"2026-05-15"},
+    {"nombre":"Ana","vencimiento":"2026-12-31"},
+    {"nombre":"Luis","vencimiento":"2026-10-08"},
+    {"nombre":"Pedro","vencimiento":"2027-02-18"},
+    {"nombre":"Martin","vencimiento":"2025-09-03"}
+] 

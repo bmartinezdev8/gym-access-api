@@ -1,3 +1,9 @@
+const fs = require("fs");
+const path = require("path");
+
+const ruta = path.join(__dirname, "..", "data", "socios.json");
+const socios = JSON.parse(fs.readFileSync(ruta, "utf-8"));
+
 function fechaHoy(){
     return new Date().toLocaleDateString("en-CA");
 }
@@ -8,11 +14,7 @@ function puedeEntrar(socio){
     }
     return `${socio.nombre}: plan vencido`
 }
-const socios = [
-  { nombre: "Juan", vencimiento: "2026-05-15" }, 
-  { nombre: "Ana", vencimiento: "2026-12-31" },
-  { nombre: "Luis", vencimiento: fechaHoy() }, 
-];
+
 for (const socio of socios) {
     console.log (puedeEntrar(socio));
 }
