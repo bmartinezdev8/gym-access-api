@@ -1,7 +1,50 @@
 [
-    {"nombre":"Juan","vencimiento":"2026-05-15"},
-    {"nombre":"Ana","vencimiento":"2026-12-31"},
-    {"nombre":"Luis","vencimiento":"2026-10-08"},
-    {"nombre":"Pedro","vencimiento":"2027-02-18"},
-    {"nombre":"Martin","vencimiento":"2025-09-03"}
-] 
+  {
+    "id": 1,
+    "rut": "11111111-1",
+    "nombre": "Juan",
+    "vencimiento": "2026-05-15"
+  },
+  {
+    "id": 2,
+    "rut": "12345678-5",
+    "nombre": "Ana",
+    "vencimiento": "2026-12-31"
+  },
+  {
+    "id": 3,
+    "rut": "22222222-2",
+    "nombre": "Luis",
+    "vencimiento": "2026-10-08"
+  },
+  {
+    "id": 4,
+    "rut": "10000000-8",
+    "nombre": "Pedro",
+    "vencimiento": "2027-02-18"
+  },
+  {
+    "id": 5,
+    "rut": "6000000-K",
+    "nombre": "Martin",
+    "vencimiento": "2025-09-03"
+  },
+  {
+    "id": 6,
+    "rut": "33333333-3",
+    "nombre": "Camila",
+    "vencimiento": "2027-01-31"
+  },
+  {
+    "id": 7,
+    "rut": "99888777-K",
+    "nombre": "Felipe",
+    "vencimiento": "2027-01-31"
+  },
+  {
+    "id": 8,
+    "rut": "66888777-K",
+    "nombre": "Matias",
+    "vencimiento": "2027-01-31"
+  }
+]
