@@ -1,7 +1,8 @@
 # gym-access-api
 
--Sistema simple de control de acceso para un gimnasio.
--Verifica la fecha de vencimiento del plan de cada socio para decidir si puede entrar.
+Sistema simple de control de acceso para un gimnasio.
+
+Verifica la fecha de vencimiento del plan de cada socio para decidir si puede entrar.
 
 > Proyecto de practica. Datos ficticios
 
@@ -9,8 +10,8 @@
 - Lee la lista de socios desde `data/socios.json`
 - Indica si cada socio puede entrar o si el plan esta vencido
 - Registra socios con `id` automatico
-- Normaliza al rut a un solo formato (sin puntos y con guion) evitando rut repetidos
-- Valida el nombre y fecha de vencimiento previo a guardar
+- Normaliza el RUT a un solo formato (sin puntos y con guion) evitando RUT repetidos
+- Comprueba que el nombre no esté vacío y que la fecha de vencimiento exista antes de guardar.
 - Muestra mensaje claro si `socios.json` no existe o esta mal escrito
 
 ## Requisitos
@@ -26,6 +27,16 @@ No hay dependencias que instalar.
 3. Ejecuta `node src/index.js`
 
 Al final de `src/index.js` está la sección de ejecución. Ahí activas o comentas las llamadas a `mostrarAccesos()`, `listarSocios()` y `agregarSocio(...)`.
+
+## Registrar un socio
+
+En la sección de ejecución de `src/index.js`, llama a la función con el RUT, el nombre y la fecha de vencimiento:
+
+```js
+agregarSocio("33.313.333-3", "Ana", "2027-12-31");
+```
+
+Si algún dato no es válido, muestra un mensaje de error y no guarda nada.
 
 ## Estructura
 
@@ -47,9 +58,7 @@ Al final de `src/index.js` está la sección de ejecución. Ahí activas o comen
 - `vencimiento`: formato `aaaa-mm-dd`.
 
 ## Próximos pasos
-
-- Evitar nombres formados solo por espacios.
-- Verificar que la fecha de vencimiento exista de verdad.
+- Validar el dígito verificador del RUT.
 - Guardar los socios en PostgreSQL.
 - Convertirlo en una API con Express.
 - Generar un código QR por socio para el control de acceso.
