@@ -51,6 +51,10 @@ function listarSocios (){                                                //muest
     }
 }
 
+function guardarSocios() {
+    fs.writeFileSync(ruta, JSON.stringify(socios, null, 2));
+}
+
 function agregarSocio (rut, nombre, vencimiento){
     const rutNormal = normalizarRut(rut);                      
     if (!rutNormal) {
@@ -75,8 +79,9 @@ function agregarSocio (rut, nombre, vencimiento){
     }
     const id = socios.length ? Math.max(...socios.map((s) => s.id)) + 1 : 1;   //asignar id verificando cual es el numero mas alto para sumarle uno
     socios.push({ id, rut: rutNormal, nombre : nombre.trim(), vencimiento });         //agregar nuevo objeto al arreglo de la memoria
-    fs.writeFileSync(ruta, JSON.stringify (socios, null, 2));
+    guardarSocios();                                                                 //guardar en el archivo socios.json
 }
+
 
 
 function puedeEntrar(socio){
@@ -94,6 +99,7 @@ function mostrarAccesos() {
 
 
 // ejecucion
+
+//agregarSocio("44444444-4", "Pepe", "2028-02-29");
+
 mostrarAccesos();
-
-
