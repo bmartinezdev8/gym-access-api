@@ -1,105 +1,149 @@
 const fs = require("fs");
 const path = require("path");
 
-const ruta = path.join(__dirname, "..", "data", "socios.json");
+function createSociosManager(filePath = path.join(__dirname, "..", "data", "socios.json")) {
+  let socios = [];
 
-let socios;
+  function cargarSocios() {
+    try {
+      const archivo = fs.readFileSync(filePath, "utf-8");
+      const datos = JSON.parse(archivo);
 
-try {
-  socios = JSON.parse(fs.readFileSync(ruta, "utf-8"));
-  if (!Array.isArray(socios)) {
-    throw new Error("el archivo debe contener un arreglo de socios");
+      if (!Array.isArray(datos)) {
+        throw new Error("el archivo debe contener un arreglo de socios");
+      }
+
+      socios = datos;
+      return socios;
+    } catch (error) {
+      const detalle = error instanceof Error ? error.message : String(error);
+      throw new Error(`No se pudo leer socios.json: ${detalle}`);
+    }
   }
-} catch (error) {
-  console.error("No se pudo leer socios.json:", error.message);
-  process.exit(1);
-}
 
+  function guardarSocios() {
+    fs.writeFileSync(filePath, JSON.stringify(socios, null, 2));
+  }
 
-function fechaHoy(){
-    return new Date().toLocaleDateString("en-CA");
+  function listarSocios() {
+    for (const socio of socios) {
+      console.log(`Nombre: ${socio.nombre}`);
+      console.log(`Fecha de vencimiento: ${socio.vencimiento}`);
+    }
+  }
+
+  function agregarSocio(rut, nombre, vencimiento) {
+    const rutNormal = normalizeRut(rut);
+
+    if (!rutNormal) {
+      console.error("Rut invalido");
+      return false;
+    }
+
+    if (!validarNombre(nombre)) {
+      console.error("Nombre invalido");
+      return false;
+    }
+
+    if (!isValidIsoDate(vencimiento)) {
+      console.error("Fecha inexistente");
+      return false;
+    }
+
+    if (socios.some((s) => s.rut === rutNormal)) {
+      console.error("Rut ya existente");
+      return false;
+    }
+
+    const id = socios.length ? Math.max(...socios.map((s) => s.id)) + 1 : 1;
+    socios.push({ id, rut: rutNormal, nombre: nombre.trim(), vencimiento });
+    guardarSocios();
+    return true;
+  }
+
+  function puedeEntrar(socio) {
+    const vencimiento = socio?.vencimiento;
+    if (vencimiento && isValidIsoDate(vencimiento) && vencimiento >= getTodayISO()) {
+      return `${socio.nombre}: acceso permitido`;
+    }
+    return `${socio.nombre}: plan vencido`;
+  }
+
+  function mostrarAccesos() {
+    for (const socio of socios) {
+      console.log(puedeEntrar(socio));
+    }
+  }
+
+  return {
+    cargarSocios,
+    guardarSocios,
+    listarSocios,
+    agregarSocio,
+    puedeEntrar,
+    mostrarAccesos,
+    getSocios: () => socios,
+    getRuta: () => filePath,
+  };
 }
 
 function limpiarRut(rut) {
-    return String(rut).replace(/[.\-\s]/g,"").toUpperCase(); //limpia el rut eliminando puntos guiones y espacios en blanco, tambien pasa a mayusculas las letras como la K
+  return String(rut ?? "").replace(/[.\-\s]/g, "").toUpperCase();
 }
 
-function formatoRutValido(rutLimpio) {                            //verifica que el rut tenga un formato valido
-  // 7 u 8 digitos y un digito verificador (0-9 o K)
+function formatoRutValido(rutLimpio) {
   return /^\d{7,8}[0-9K]$/.test(rutLimpio);
 }
 
-function normalizarRut(rut) {                                    //normaliza el rut a un formato estandar
+function normalizeRut(rut) {
   const limpio = limpiarRut(rut);
-  if (!formatoRutValido(limpio)) return null;
+  if (!formatoRutValido(limpio)) {
+    return null;
+  }
   return limpio.slice(0, -1) + "-" + limpio.slice(-1);
 }
- 
-function fechaValida(texto) {                                      //verifica que la fecha sea valida
-    const fecha = new Date(texto);
-    if (isNaN(fecha.getTime())) {
-        return false;
-    }
-    return fecha.toISOString().slice(0, 10) === texto;
+
+function validarNombre(nombre) {
+  return typeof nombre === "string" && nombre.trim() !== "";
 }
 
-
-function listarSocios (){                                                //muestra los socios en consola
-    for (const socio of socios) {
-        console.log (`Nombre: ${socio.nombre}`);
-        console.log (`Fecha de vencimiento: ${socio.vencimiento}`);
-    }
-}
-
-function guardarSocios() {
-    fs.writeFileSync(ruta, JSON.stringify(socios, null, 2));
-}
-
-function agregarSocio (rut, nombre, vencimiento){
-    const rutNormal = normalizarRut(rut);                      
-    if (!rutNormal) {
-        console.error("Rut invalido");
-        return;
-    }
-    if (!nombre || !/^\d{4}-\d{2}-\d{2}$/.test(vencimiento)) {      //verificar formato nombre y vencimiento
-        console.error("Datos invalidos, ingrese un nombre y fecha de vencimiento valido (aaaa-mm-dd)");
-        return;
-    }
-    if (typeof nombre !== "string" || nombre.trim() === ""){        // verificar que el nombre sea un string y no este vacio
-        console.error("Nombre invalido");
-        return;
-    }
-    if (!fechaValida(vencimiento)) {                                     //verificar que la fecha sea valida
-        console.error("Fecha inexistente");
-        return;
-    }
-    if (socios.some((s) => s.rut === rutNormal)) {                  // verificar si el rut ya es existente
-        console.error ("Rut ya existente");
-        return;
-    }
-    const id = socios.length ? Math.max(...socios.map((s) => s.id)) + 1 : 1;   //asignar id verificando cual es el numero mas alto para sumarle uno
-    socios.push({ id, rut: rutNormal, nombre : nombre.trim(), vencimiento });         //agregar nuevo objeto al arreglo de la memoria
-    guardarSocios();                                                                 //guardar en el archivo socios.json
-}
-
-
-
-function puedeEntrar(socio){
-    if(socio.vencimiento >=fechaHoy()) {
-        return `${socio.nombre}: acceso permitido`;
-    }
-    return `${socio.nombre}: plan vencido`;
-}
-
-function mostrarAccesos() {
-  for (const socio of socios) {
-    console.log(puedeEntrar(socio));
+function isValidIsoDate(texto) {
+  if (typeof texto !== "string") {
+    return false;
   }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    return false;
+  }
+
+  const [anio, mes, dia] = texto.split("-").map(Number);
+  const fecha = new Date(anio, mes - 1, dia);
+
+  return (
+    fecha.getFullYear() === anio &&
+    fecha.getMonth() === mes - 1 &&
+    fecha.getDate() === dia
+  );
 }
 
+function getTodayISO() {
+  const d = new Date();
+  const offset = d.getTimezoneOffset();
+  const fechaLocal = new Date(d.getTime() - offset * 60000);
+  return fechaLocal.toISOString().slice(0, 10);
+}
 
-// ejecucion
+const ruta = path.join(__dirname, "..", "data", "socios.json");
+const manager = createSociosManager(ruta);
 
-//agregarSocio("44444444-4", "Pepe", "2028-02-29");
+module.exports = {
+  createSociosManager,
+  limpiarRut,
+  formatoRutValido,
+  normalizeRut,
+  validarNombre,
+  isValidIsoDate,
+  getTodayISO,
+  ...manager,
+};
 
-mostrarAccesos();
